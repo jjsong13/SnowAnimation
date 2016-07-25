@@ -14,7 +14,7 @@
 
 @implementation SnowAniViewController
 
-- (void)viewDidLoad {
+-(void)viewDidLoad {
     [super viewDidLoad];
     [self StartBackgroundAnimation:5]; //start moving background animation after 5 secs
     [self StartSnowAnimation:0.25]; //start snow falling animation in 0.25 sec interval
@@ -40,7 +40,39 @@
     [self.view addSubview:SnowImageView];
 }
 
-- (void)didReceiveMemoryWarning {
+-(void) StartSnowAnimation:(float)Duration
+{
+    snowImage = [UIImage imageNamed:@"snow.png"]; //call snow image
+    [NSTimer scheduledTimerWithTimeInterval:(0.3) target: self //set timer
+                                   selector:@selector(animationTimerHandler:) userInfo:nil repeats:YES];
+}
+
+-(void) animationTimerHandler:(NSTimer *)theTimer
+{
+    UIImageView *snowView = [[UIImageView alloc] initWithImage:snowImage];
+    
+    int startX = round(random()%375);
+    int endX = round(random()%375);
+    double snowSpeed = 10 + (random()%10)/10.0;
+    snowView.alpha = 0.9;
+    snowView.frame = CGRectMake(startX,-20,20,20); //starting point
+    [UIView beginAnimations:nil context:(__bridge void *)(snowView)]; //set animation block
+    [UIView setAnimationDuration:snowSpeed]; //animation speed
+    
+    snowView.frame = CGRectMake(endX, 667.0, 20, 20); //final arrival point
+    [UIView setAnimationDidStopSelector:@selector(animationDidStop:finished:context:)];
+    [UIView setAnimationDelegate:self];
+    [SnowImageView addSubview:snowView]; //add image view
+    [UIView commitAnimations]; //start animatoins
+}
+
+-(void)animationDidStop:(NSString *)animationID finished:(NSNumber *)finished
+                context:(void *)context
+{
+    [(__bridge UIImageView *)context removeFromSuperview];
+}
+
+-(void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
